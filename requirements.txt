@@ -1,5 +1,4 @@
 fastapi
-uvicorn[standard]
 jinja2
 python-multipart
 pydantic-settings
@@ -7,9 +6,8 @@ langgraph
 langchain
 langchain-core
 langchain-groq
-langchain-huggingface
 langchain-community
-
+langchain-pinecone
 langchain-text-splitters
 langchain-tavily
 pinecone
@@ -18,6 +16,5 @@ python-docx
 python-dotenv
 openai
 langchain-openai
-sentence-transformers
 beautifulsoup4
 python-dotenv
