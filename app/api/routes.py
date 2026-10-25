@@ -8,7 +8,7 @@ from app.core.config import get_settings
 from app.rag.workflow import ask, ask_stream
 from app.rag.vectorstore import add_documents 
 from app.services.ingestion import load_file, chunk_documents, SUPPORTED
-from app.services.audit import write_audit
+# from app.services.audit import write_audit
 
 router = APIRouter(prefix="/api")
 settings = get_settings()
@@ -27,7 +27,7 @@ def health():
 def chat(payload: ChatRequest):
     try:
         result = ask(payload.question)
-        write_audit(payload.question, result["source_used"], result.get("trace", []))
+        # write_audit(payload.question, result["source_used"], result.get("trace", []))
 
         return {
             "answer": result["answer"],
@@ -49,7 +49,7 @@ def chat_stream(payload: ChatRequest):
             for event in ask_stream(payload.question):
                 if event["type"] == "done":
                     result = event["result"]
-                    write_audit(payload.question, result["source_used"], result.get("trace", []))
+                    # write_audit(payload.question, result["source_used"], result.get("trace", []))
                     event = {
                         "type": "done",
                         "answer": result["answer"],
