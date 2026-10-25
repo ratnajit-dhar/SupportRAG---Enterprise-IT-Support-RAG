@@ -191,8 +191,9 @@ def build_graph():
 
 agent_graph = build_graph()
 
-def ask(question: str):
-    initial: AgentState = {
+
+def initial_state(question: str) -> AgentState:
+    return {
         "question": question,
         "current_query": question,
         "kb_docs": [],
@@ -205,4 +206,67 @@ def ask(question: str):
         "trace": [],
         "citations": [],
     }
-    return agent_graph.invoke(initial)
+
+
+def ask(question: str):
+    return agent_graph.invoke(initial_state(question))
+
+
+def ask_stream(question: str):
+    final_state = None
+    generation_nodes = {"generate_from_kb", "generate_from_web", "direct_answer"}
+    progress_messages = {
+        "route_question": "Understanding your question...",
+        "retrieve_kb": "Searching your company knowledge base...",
+        "grade_kb": "Checking the company guidance I found...",
+        "search_web": "Searching trusted external sources...",
+        "grade_web": "Checking the external sources...",
+        "rewrite_query": "Refining the search...",
+        "generate_from_kb": "Preparing an answer from company guidance...",
+        "generate_from_web": "Preparing an answer from external sources...",
+        "direct_answer": "Preparing a response...",
+        "insufficient": "Finding the safest next step...",
+    }
+
+    for event in agent_graph.stream(
+        initial_state(question),
+        stream_mode=["messages", "values", "tasks"],
+        version="v2",
+    ):
+        if event["type"] == "values":
+            final_state = event["data"]
+            continue
+
+        if event["type"] == "tasks":
+            task = event["data"]
+            if "result" not in task:
+                message = progress_messages.get(task.get("name"))
+                if message:
+                    yield {"type": "progress", "message": message}
+            continue
+
+        if event["type"] != "messages":
+            continue
+
+        message, metadata = event["data"]
+        if metadata.get("langgraph_node") not in generation_nodes:
+            continue
+
+        content = message.content
+        if isinstance(content, str):
+            text = content
+        elif isinstance(content, list):
+            text = "".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict) and block.get("type") == "text"
+            )
+        else:
+            text = ""
+
+        if text:
+            yield {"type": "token", "content": text}
+
+    if final_state is None:
+        raise RuntimeError("Chat workflow completed without returning a final state")
+    yield {"type": "done", "result": final_state}

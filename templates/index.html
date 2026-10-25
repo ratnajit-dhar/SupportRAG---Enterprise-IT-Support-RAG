@@ -1,0 +1,289 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+      <div class="sidebar-content">
+
+        <!-- Branding -->
+        <div class="sidebar-brand">
+        
+
+          <div class="brand-heading">
+            <h1>SupportRAG</h1><br />Enterprise IT Support RAG</h1>
+            <p class="muted">
+              Private company knowledge first.
+              External web only when evidence is weak.
+            </p>
+          </div>
+        </div>
+
+        <!-- Workflow -->
+        <div class="workflow-card">
+
+          <div class="workflow-header">
+            <div>
+              <span class="section-eyebrow">SYSTEM PIPELINE</span>
+              <h3>LangGraph Workflow</h3>
+            </div>
+            <span class="workflow-indicator">●</span>
+          </div>
+
+          <div class="workflow-steps">
+
+            <div class="flow-step">
+              <span class="step-number">01</span>
+              <span class="step-label">Route question</span>
+            </div>
+
+            <div class="flow-step">
+              <span class="step-number">02</span>
+              <span class="step-label">Retrieve private KB</span>
+            </div>
+
+            <div class="flow-step">
+              <span class="step-number">03</span>
+              <span class="step-label">Grade evidence</span>
+            </div>
+
+            <div class="flow-step">
+              <span class="step-number">04</span>
+              <span class="step-label">Web fallback if weak</span>
+            </div>
+
+            <div class="flow-step">
+              <span class="step-number">05</span>
+              <span class="step-label">Rewrite & retry</span>
+            </div>
+
+            <div class="flow-step">
+              <span class="step-number">06</span>
+              <span class="step-label">Grounded answer</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Upload Button -->
+      <div class="sidebar-footer">
+        <button id="openUpload" class="secondary-btn">
+          <span class="button-icon">＋</span>
+          <span>Add Company Document</span>
+        </button>
+      </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+    <main class="main">
+
+      <!-- Top Navigation -->
+      <header class="topbar">
+
+        <div class="topbar-left">
+          <span class="status-dot"></span>
+
+          <div class="topbar-title">
+            <span>Enterprise Knowledge Copilot</span>
+            <small>Intelligent IT assistance</small>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="pill">Agentic RAG</span>
+        </div>
+
+      </header>
+
+
+      <!-- Chat Area -->
+      <section id="chat" class="chat-area">
+
+        <div class="message assistant">
+
+          <div class="avatar">AI</div>
+
+          <div class="bubble">
+
+            <div class="welcome-header">
+              <span class="welcome-eyebrow">YOUR AI ASSISTANT</span>
+
+              <strong>How can I help with IT support?</strong>
+            </div>
+
+            <p>
+              Try: “How do I connect to the company VPN?”
+              or ask a question that may require current
+              external vendor information.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Composer -->
+      <section class="composer-wrap">
+
+        <div class="composer-content">
+
+          <div class="examples">
+
+            <button class="example">
+              How do I connect to the company VPN?
+            </button>
+
+            <button class="example">
+              What is our password reset policy?
+            </button>
+
+            <button class="example">
+              What is the latest Microsoft Teams outage guidance?
+            </button>
+
+          </div>
+
+
+          <form id="chatForm" class="composer">
+
+            <textarea
+              id="question"
+              rows="2"
+              placeholder="Ask an IT support question..."
+              required
+            ></textarea>
+
+            <button type="submit" class="send-btn">
+              Ask Agent
+            </button>
+
+          </form>
+
+          <div class="composer-footer">
+            <span>Powered by LangGraph &amp; RAG</span>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- ================= TRACE PANEL ================= -->
+    <aside class="trace-panel">
+
+      <div class="trace-header">
+
+        <div>
+          <span class="section-eyebrow">EXECUTION MONITOR</span>
+          <h2>Agent Trace</h2>
+        </div>
+
+        <span class="trace-live-indicator">●</span>
+
+      </div>
+
+      <p class="muted">
+        Watch LangGraph decisions while the request runs.
+      </p>
+
+      <div class="trace-divider"></div>
+
+      <div id="trace" class="trace-list">
+        <div class="empty">No request yet.</div>
+      </div>
+
+      <div class="source-box">
+
+        <div class="source-label">
+          <span>Final Source</span>
+        </div>
+
+        <strong id="sourceUsed">—</strong>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <!-- ================= UPLOAD MODAL ================= -->
+  <div id="uploadModal" class="modal hidden">
+
+    <div class="modal-card">
+
+      <div class="modal-head">
+
+        <div class="modal-title">
+          <span class="section-eyebrow">KNOWLEDGE MANAGEMENT</span>
+          <h2>Ingest Company Document</h2>
+        </div>
+
+        <button id="closeUpload" aria-label="Close upload modal">
+          ×
+        </button>
+
+      </div>
+
+      <p class="muted">
+        Upload PDF, TXT, Markdown, or DOCX.
+        The document is chunked, embedded, and indexed into Pinecone.
+      </p>
+
+      <div class="upload-fields">
+
+        <div class="input-group">
+          <label for="adminKey">Administrator Access</label>
+
+          <input
+            id="adminKey"
+            type="password"
+            placeholder="Admin API key"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="fileInput">Select Document</label>
+
+          <input
+            id="fileInput"
+            type="file"
+            accept=".pdf,.txt,.md,.docx"
+          />
+        </div>
+
+      </div>
+
+      <button id="uploadBtn" class="send-btn full">
+        Index Document
+      </button>
+
+      <div id="uploadStatus" class="upload-status"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Existing JavaScript -->
+  <script src="/static/js/app.js"></script>
+
+</body>
+</html>
+
