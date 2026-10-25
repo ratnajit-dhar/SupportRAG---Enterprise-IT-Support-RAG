@@ -9,6 +9,7 @@ langchain-core
 langchain-groq
 langchain-huggingface
 langchain-community
+langchain-pinecone
 langchain-text-splitters
 langchain-tavily
 pinecone
